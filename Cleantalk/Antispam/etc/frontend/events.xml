@@ -1,0 +1,8 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_action_predispatch">
+        <observer name="cleantalk_antispam_observer_predispatch" instance="Cleantalk\Antispam\Observer\Predispatch" />
+    </event>
+	<event name="controller_front_init_before">
+        <observer name="cleantalk_antispam_observer_init_before" instance="Cleantalk\Antispam\Observer\InitBefore" />
+    </event>
+</config>
