@@ -209,6 +209,7 @@ class Predispatch implements ObserverInterface
             'creation_time',
             'uenc',
             'product',
+            'qty',
 
         );
                 
