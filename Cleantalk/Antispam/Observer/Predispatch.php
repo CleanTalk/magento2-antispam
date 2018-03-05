@@ -413,10 +413,7 @@ class Predispatch implements ObserverInterface
         $ct->server_ttl = $ct_ws['server_ttl'];
         $ct->server_changed = $ct_ws['server_changed'];
 
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])){
-            $forwarded_for = (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) ? htmlentities($_SERVER['HTTP_X_FORWARDED_FOR']) : '';
-        }
-            $sender_ip = (!empty($forwarded_for)) ? $forwarded_for : $_SERVER['REMOTE_ADDR'];
+        $sender_ip = $ct->cleantalk_get_real_ip();
         $ct_request = new CleantalkRequest();
         $ct_request->auth_key = $ct_key;
         $ct_request->sender_email = isset($arEntity['sender_email']) ? $arEntity['sender_email'] : '';
@@ -427,7 +424,7 @@ class Predispatch implements ObserverInterface
         $ct_request->sender_info = $sender_info;
         $ct_submit_time = NULL;
         if(isset($_SESSION['ct_submit_time']))
-        $ct_submit_time = time() - $_SESSION['ct_submit_time'];
+            $ct_submit_time = time() - $_SESSION['ct_submit_time'];
         switch ($type) {
             case 'comment':
                 $timelabels_key = 'mail_error_comment';
