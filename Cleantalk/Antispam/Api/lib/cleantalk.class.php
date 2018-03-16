@@ -948,7 +948,7 @@ class Cleantalk {
     }
 }
 
-    function cleantalk_get_real_ip()
+    public function cleantalk_get_real_ip()
     {
       // Getting headers
       $headers = function_exists('apache_request_headers') ? apache_request_headers() : $_SERVER;
