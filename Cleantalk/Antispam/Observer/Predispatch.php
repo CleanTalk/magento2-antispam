@@ -61,7 +61,8 @@ class Predispatch implements ObserverInterface
         //Go out if CleanTalk disabled
         if(!$this->getConfigValue('ct_enabled'))
             return;
-                
+        if (strpos($_SERVER['REQUEST_URI'], '/checkout/cart/add/') !== false)
+            return;
         //Exeptions for spam protection
         if(isset($_POST) && count($_POST)){
             //Flag to disable custom contact form checking
@@ -92,7 +93,7 @@ class Predispatch implements ObserverInterface
                 
                 $ct_already_checked = true;
             }
-            
+             
             //Custom Forms
             $custom_forms_test_enabled = $this->getConfigValue('ct_custom_contact_forms');
             if( $custom_forms_test_enabled &&
@@ -100,6 +101,7 @@ class Predispatch implements ObserverInterface
                 strpos($_SERVER['REQUEST_URI'],'login')===false &&
                 strpos($_SERVER['REQUEST_URI'],'forgotpassword')===false
             ){
+
                 $ct_fields = $this -> cleantalkGetFields($_POST);
                 $result_array = $this -> setArrayToSend($ct_fields, 'comment');
             }
@@ -108,7 +110,7 @@ class Predispatch implements ObserverInterface
             if(isset($result_array)){
                                 
                 $aResult = $this -> CheckSpam($result_array);
-            
+            error_log(print_r($aResult,true));
                 if(isset($aResult) && is_array($aResult)){
                     if($aResult['errno'] == 0){
                         if($aResult['allow'] == 0){
