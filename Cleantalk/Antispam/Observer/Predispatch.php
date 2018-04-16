@@ -111,7 +111,6 @@ class Predispatch implements ObserverInterface
             if(isset($result_array)){
                                 
                 $aResult = $this -> CheckSpam($result_array);
-            error_log(print_r($aResult,true));
                 if(isset($aResult) && is_array($aResult)){
                     if($aResult['errno'] == 0){
                         if($aResult['allow'] == 0){
@@ -143,7 +142,7 @@ class Predispatch implements ObserverInterface
      * Cookie test 
      * @return 
      */
-    static function CookieTest() {
+    function CookieTest() {
 
         // Cookie names to validate
         $cookie_test_value = array(
