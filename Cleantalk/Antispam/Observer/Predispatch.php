@@ -57,7 +57,6 @@ class Predispatch implements ObserverInterface
  
     
     public function execute(Observer $observer){
-        
         //Go out if CleanTalk disabled
         if(!$this->getConfigValue('ct_enabled'))
             return;
@@ -149,13 +148,6 @@ class Predispatch implements ObserverInterface
             'cookies_names' => array(),
             'check_value' => $this->getConfigValue('ct_access_key'),
         );
-            
-        // Submit time
-        $apbct_timestamp = time();
-        setcookie('apbct_timestamp', $apbct_timestamp, 0, '/');
-        $cookie_test_value['cookies_names'][] = 'apbct_timestamp';
-        $cookie_test_value['check_value'] .= $apbct_timestamp;
-
         // Pervious referer
         if(!empty($_SERVER['HTTP_REFERER'])){
             setcookie('apbct_prev_referer', $_SERVER['HTTP_REFERER'], 0, '/');
@@ -464,7 +456,7 @@ class Predispatch implements ObserverInterface
         $ct_request->agent = 'magento2-11';
         $ct_request->js_on = $checkjs;
         $ct_request->sender_info = $sender_info;
-        $ct_request->submit_time = isset($_COOKIE['apbct_timestamp']) ? time() - intval($_COOKIE['apbct_timestamp']) : 0;
+        $ct_request->submit_time = isset($_COOKIE['ct_ps_timestamp']) ? time() - intval($_COOKIE['ct_ps_timestamp']) : 0;
         switch ($type) {
             case 'comment':
                 $timelabels_key = 'mail_error_comment';

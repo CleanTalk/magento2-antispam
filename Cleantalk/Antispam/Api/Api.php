@@ -113,7 +113,7 @@ ctSetCookie("%s", "%s");
         $ct_request->agent = 'magento2-11';
         $ct_request->js_on = $checkjs;
         $ct_request->sender_info = $sender_info;
-        $ct_request->submit_time = isset($_COOKIE['apbct_timestamp']) ? time() - intval($_COOKIE['apbct_timestamp']) : 0;
+        $ct_request->submit_time = isset($_COOKIE['ct_ps_timestamp']) ? time() - intval($_COOKIE['ct_ps_timestamp']) : 0;
 
         switch ($type) {
             case 'comment':
