@@ -63,6 +63,7 @@ class Predispatch implements ObserverInterface
             return;
         if (strpos($_SERVER['REQUEST_URI'], '/checkout/cart/add/') !== false)
             return;
+        $this->CookieTest();
         //Exeptions for spam protection
         if(isset($_POST) && count($_POST)){
             //Flag to disable custom contact form checking
@@ -138,7 +139,45 @@ class Predispatch implements ObserverInterface
         $result_array['send_request'] = ($arr['message'] || $arr['email']) ? true: false;
         return $result_array;
     }
-    
+    /**
+     * Cookie test 
+     * @return 
+     */
+    static function CookieTest() {
+
+        // Cookie names to validate
+        $cookie_test_value = array(
+            'cookies_names' => array(),
+            'check_value' => $this->getConfigValue('ct_access_key'),
+        );
+            
+        // Submit time
+        $apbct_timestamp = time();
+        setcookie('apbct_timestamp', $apbct_timestamp, 0, '/');
+        $cookie_test_value['cookies_names'][] = 'apbct_timestamp';
+        $cookie_test_value['check_value'] .= $apbct_timestamp;
+
+        // Pervious referer
+        if(!empty($_SERVER['HTTP_REFERER'])){
+            setcookie('apbct_prev_referer', $_SERVER['HTTP_REFERER'], 0, '/');
+            $cookie_test_value['cookies_names'][] = 'apbct_prev_referer';
+            $cookie_test_value['check_value'] .= $_SERVER['HTTP_REFERER'];
+        }
+        
+        // Landing time
+        if(isset($_COOKIE['apbct_site_landing_ts'])){
+            $site_landing_timestamp = $_COOKIE['apbct_site_landing_ts'];
+        }else{
+            $site_landing_timestamp = time();
+            setcookie('apbct_site_landing_ts', $site_landing_timestamp, 0, '/');
+        }
+        $cookie_test_value['cookies_names'][] = 'apbct_site_landing_ts';
+        $cookie_test_value['check_value'] .= $site_landing_timestamp;
+        
+        // Cookies test
+        $cookie_test_value['check_value'] = md5($cookie_test_value['check_value']);
+        setcookie('apbct_cookies_test', json_encode($cookie_test_value), 0, '/');
+    }     
     //Recursevely gets data from array
     static function cleantalkGetFields($arr, $message=array(), $email = null, $nickname = array('nick' => '', 'first' => '', 'last' => ''), $subject = null, $contact = true, $prev_name = ''){
         
@@ -404,7 +443,8 @@ class Predispatch implements ObserverInterface
             'REFFERRER' => $refferrer,
             'post_url' => $refferrer,
             'USER_AGENT' => $user_agent,
-            'js_timezone' => $timezone
+            'js_timezone' => $timezone,
+            'REFFERRER_PREVIOUS' => isset($_COOKIE['apbct_prev_referer']) ? $_COOKIE['apbct_prev_referer'] : null,
         );
         $sender_info = json_encode($sender_info);
                 
@@ -425,13 +465,10 @@ class Predispatch implements ObserverInterface
         $ct_request->agent = 'magento2-11';
         $ct_request->js_on = $checkjs;
         $ct_request->sender_info = $sender_info;
-        $ct_submit_time = NULL;
-        if(isset($_SESSION['ct_submit_time']))
-            $ct_submit_time = time() - $_SESSION['ct_submit_time'];
+        $ct_request->submit_time = isset($_COOKIE['apbct_timestamp']) ? time() - intval($_COOKIE['apbct_timestamp']) : 0;
         switch ($type) {
             case 'comment':
                 $timelabels_key = 'mail_error_comment';
-                $ct_request->submit_time = $ct_submit_time;
 
                 $message_title = isset($arEntity['message_title']) ? $arEntity['message_title'] : '';
                 $message_body = isset($arEntity['message_body']) ? $arEntity['message_body'] : '';
@@ -467,7 +504,6 @@ class Predispatch implements ObserverInterface
                 break;
             case 'register':
                 $timelabels_key = 'mail_error_reg';
-                $ct_request->submit_time = $ct_submit_time;
                 $ct_request->tz = isset($arEntity['user_timezone']) ? $arEntity['user_timezone'] : NULL;
                 $ct_result = $ct->isAllowUser($ct_request);
         }
