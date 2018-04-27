@@ -60,7 +60,7 @@ class Predispatch implements ObserverInterface
         //Go out if CleanTalk disabled
         if(!$this->getConfigValue('ct_enabled'))
             return;
-        if (strpos($_SERVER['REQUEST_URI'], '/checkout/cart/add/') !== false)
+        if (strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false)
             return;
         $this->CookieTest();
         //Exeptions for spam protection
@@ -453,7 +453,7 @@ class Predispatch implements ObserverInterface
         $ct_request->sender_email = isset($arEntity['sender_email']) ? $arEntity['sender_email'] : '';
         $ct_request->sender_nickname = isset($arEntity['sender_nickname']) ? $arEntity['sender_nickname'] : '';
         $ct_request->sender_ip = isset($arEntity['sender_ip']) ? $arEntity['sender_ip'] : $sender_ip;
-        $ct_request->agent = 'magento2-11';
+        $ct_request->agent = 'magento2-12';
         $ct_request->js_on = $checkjs;
         $ct_request->sender_info = $sender_info;
         $ct_request->submit_time = isset($_COOKIE['ct_ps_timestamp']) ? time() - intval($_COOKIE['ct_ps_timestamp']) : 0;

@@ -3,7 +3,7 @@
 	"description": "Antispam by CleanTalk",
 	"type": "magento2-module",
 	"homepage": "https://cleantalk.org",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"time": "2016-10-27",
 	"license": "GPL-2.0",
 	"authors": [
