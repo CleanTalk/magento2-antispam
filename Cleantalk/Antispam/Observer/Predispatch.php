@@ -460,9 +460,12 @@ class Predispatch implements ObserverInterface
         switch ($type) {
             case 'comment':
                 $timelabels_key = 'mail_error_comment';
-
-                $message_title = isset($arEntity['message_title']) ? $arEntity['message_title'] : '';
-                $message_body = isset($arEntity['message_body']) ? $arEntity['message_body'] : '';
+                if (isset($arEntity['message_title']))
+                    $message_title = is_array($arEntity['message_title']) ? implode(" ", $arEntity['message_title']) : $arEntity['message_title'];
+                else $message_title = '';
+                if (isset($arEntity['message_body']))
+                    $message_body = is_array($arEntity['message_body']) ? implode(" ", $arEntity['message_body']) : $arEntity['message_body'];
+                else $message_body = '';
                 $ct_request->message = $message_title . " \n\n" . $message_body;
 
                 $example = '';
