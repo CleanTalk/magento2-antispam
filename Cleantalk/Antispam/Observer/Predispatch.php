@@ -60,7 +60,7 @@ class Predispatch implements ObserverInterface
         //Go out if CleanTalk disabled
         if(!$this->getConfigValue('ct_enabled'))
             return;
-        if (strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false)
+        if (strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false || strpos($_SERVER['REQUEST_URI'], 'sagepay') !== false || strpos($_SERVER['REQUEST_URI'], 'paypal') !== false)
             return;
         $this->CookieTest();
         //Exeptions for spam protection
