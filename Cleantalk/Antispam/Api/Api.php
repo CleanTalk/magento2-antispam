@@ -188,46 +188,6 @@ ctSetCookie("%s", "%s");
 	    }
             $ret_val['errstr'] = $err_str;
 
-            $timedata = FALSE;
-            $send_flag = FALSE;
-            $insert_flag = FALSE;
-            try{
-                $timelabels = Mage::getModel('antispam/timelabels');
-                $timelabels->load('mail_error');
-                $time = $timelabels->getData();
-                if(!$time || empty($time)){
-                    $send_flag = TRUE;
-                    $insert_flag = TRUE;
-                }elseif(time()-900 > $time['ct_value']) {   // 15 minutes
-                    $send_flag = TRUE;
-                    $insert_flag = FALSE;
-                }
-            }catch(Exception $e){
-                $send_flag = FALSE;
-                Mage::log('Cannot operate with "cleantalk_timelabels" table.');
-            }
-            
-            if($send_flag){
-                Mage::log($err_str);
-                if(!$insert_flag)
-                    $timelabels->setData('ct_key', 'mail_error');
-                $timelabels->setData('ct_value', time());
-                $timelabels->save();
-                $general_email = Mage::getStoreConfig('trans_email/ident_general/email');
-
-                $mail = Mage::getModel('core/email');
-                $mail->setToEmail($general_email);
-                $mail->setFromEmail($general_email);
-                $mail->setSubject($err_title);
-                $mail->setBody($_SERVER['SERVER_NAME'] . "\n\n" . $err_str);
-                $mail->setType('text');
-                try{
-                    $mail->send();
-                }catch (Exception $e){
-                    Mage::log('Cannot send CleanTalk module error message to ' . $general_email);
-                }
-            }
-
             return $ret_val;
         }
 
