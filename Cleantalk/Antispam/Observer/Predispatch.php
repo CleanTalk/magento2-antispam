@@ -65,7 +65,7 @@ class Predispatch implements ObserverInterface
             return;
         if (strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false || strpos($_SERVER['REQUEST_URI'], 'sagepay') !== false || strpos($_SERVER['REQUEST_URI'], 'paypal') !== false)
             return;
-        $this->CookieTest();
+        $this->cookies_set();
         //Exeptions for spam protection
         if(isset($_POST) && count($_POST)){
             //Flag to disable custom contact form checking
@@ -144,7 +144,7 @@ class Predispatch implements ObserverInterface
      * Cookie test 
      * @return 
      */
-    function CookieTest() {
+    function cookies_set() {
 
         // Cookie names to validate
         $cookie_test_value = array(
@@ -153,25 +153,54 @@ class Predispatch implements ObserverInterface
         );
         // Pervious referer
         if(!empty($_SERVER['HTTP_REFERER'])){
-            setcookie('apbct_prev_referer', $_SERVER['HTTP_REFERER'], 0, '/');
-            $cookie_test_value['cookies_names'][] = 'apbct_prev_referer';
+            setcookie('ct_prev_referer', $_SERVER['HTTP_REFERER'], 0, '/');
+            $cookie_test_value['cookies_names'][] = 'ct_prev_referer';
             $cookie_test_value['check_value'] .= $_SERVER['HTTP_REFERER'];
         }
-        
+        // Submit time
+        $ct_timestamp = time();
+        setcookie('ct_timestamp', $ct_timestamp, 0, '/');
+        $cookie_test_value['cookies_names'][] = 'ct_timestamp';
+        $cookie_test_value['check_value'] .= $ct_timestamp; 
+
         // Landing time
-        if(isset($_COOKIE['apbct_site_landing_ts'])){
-            $site_landing_timestamp = $_COOKIE['apbct_site_landing_ts'];
+        if(isset($_COOKIE['ct_site_landing_ts'])){
+            $site_landing_timestamp = $_COOKIE['ct_site_landing_ts'];
         }else{
             $site_landing_timestamp = time();
-            setcookie('apbct_site_landing_ts', $site_landing_timestamp, 0, '/');
+            setcookie('ct_site_landing_ts', $site_landing_timestamp, 0, '/');
         }
-        $cookie_test_value['cookies_names'][] = 'apbct_site_landing_ts';
+        $cookie_test_value['cookies_names'][] = 'ct_site_landing_ts';
         $cookie_test_value['check_value'] .= $site_landing_timestamp;
         
         // Cookies test
         $cookie_test_value['check_value'] = md5($cookie_test_value['check_value']);
-        setcookie('apbct_cookies_test', json_encode($cookie_test_value), 0, '/');
-    }     
+        setcookie('ct_cookies_test', json_encode($cookie_test_value), 0, '/');
+    }
+    /**
+    * Cookie test
+    * @return int
+    */  
+    function cookies_test()
+    {   
+        if(isset($_COOKIE['ct_cookies_test'])){
+            
+            $cookie_test = json_decode(stripslashes($_COOKIE['ct_cookies_test']), true);
+            
+            $check_srting = $this->getConfigValue('ct_access_key');
+            foreach($cookie_test['cookies_names'] as $cookie_name){
+                $check_srting .= isset($_COOKIE[$cookie_name]) ? $_COOKIE[$cookie_name] : '';
+            } unset($cokie_name);
+            
+            if($cookie_test['check_value'] == md5($check_srting)){
+                return 1;
+            }else{
+                return 0;
+            }
+        }else{
+            return null;
+        }
+    }         
     //Recursevely gets data from array
     static function cleantalkGetFields($arr, $message=array(), $email = null, $nickname = array('nick' => '', 'first' => '', 'last' => ''), $subject = null, $contact = true, $prev_name = ''){
         
@@ -419,7 +448,11 @@ class Predispatch implements ObserverInterface
 
         $checkjs = $this->getCookie('ct_checkjs') == '777b374af06bbb4f6fdbda40727b5c3b' ? 1 : 0;
         $timezone = $this->getCookie('ct_timezone');
-        
+        $ref_pref = $this->getCookie('ct_prev_referer');
+        $fkp_timestamp = $this->getCookie('ct_fkp_timestamp');
+        $pointer_data = $this->getCookie('ct_pointer_data');
+        $ps_timestamp = $this->getCookie('ct_ps_timestamp');
+        $ct_timestamp = $this->getCookie('ct_timestamp');
         if(isset($_SERVER['HTTP_USER_AGENT']))
             $user_agent = htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']);
         else
@@ -438,7 +471,11 @@ class Predispatch implements ObserverInterface
             'post_url' => $refferrer,
             'USER_AGENT' => $user_agent,
             'js_timezone' => $timezone,
-            'REFFERRER_PREVIOUS' => isset($_COOKIE['apbct_prev_referer']) ? $_COOKIE['apbct_prev_referer'] : null,
+            'REFFERRER_PREVIOUS' => ($ref_pref) ? $ref_pref : null,
+            'cookies_enabled' => $this->cookies_test(),
+            'mouse_cursor_positions' => ($pointer_data) ? json_decode($pointer_data) : ''),
+            'key_press_timestamp' => ($fkp_timestamp) ? $fkp_timestamp : ''),
+            'page_set_timestamp' => ($ps_timestamp) ? $ps_timestamp : 0),            
         );
         $sender_info = json_encode($sender_info);
                 
@@ -459,7 +496,7 @@ class Predispatch implements ObserverInterface
         $ct_request->agent = 'magento2-12';
         $ct_request->js_on = $checkjs;
         $ct_request->sender_info = $sender_info;
-        $ct_request->submit_time = isset($_COOKIE['ct_ps_timestamp']) ? time() - intval($_COOKIE['ct_ps_timestamp']) : 0;
+        $ct_request->submit_time = ($ct_timestamp) ? time() - intval($ct_timestamp) : 0;
         switch ($type) {
             case 'comment':
                 $timelabels_key = 'mail_error_comment';
