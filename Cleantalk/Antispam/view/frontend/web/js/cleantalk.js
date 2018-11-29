@@ -1,4 +1,8 @@
-var d = new Date();
+var d = new Date(),
+	ctTimeMs = new Date().getTime(),
+	ctMouseEventTimerFlag = true, //Reading interval flag
+	ctMouseData = "[",
+	ctMouseDataCounter = 0;
 
 function ctSetCookie(c_name,value){
 	document.cookie = c_name + "=" + escape(value) + "; path=/";
