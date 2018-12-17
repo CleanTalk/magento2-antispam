@@ -96,7 +96,18 @@ class Predispatch implements ObserverInterface
                 
                 $ct_already_checked = true;
             }
-             
+            //Reviews
+            $reviews_test_enabled = $this->getConfigValue('ct_reviews');
+            if( 
+                $reviews_test_enabled &&
+                strpos($_SERVER['REQUEST_URI'],'review') && 
+                isset($_POST['nickname'], $_POST['title'], $_POST['detail'])
+            ){
+                $ct_fields = $this -> cleantalkGetFields($_POST);
+                $result_array = $this -> setArrayToSend($ct_fields, 'comment');
+                
+                $ct_already_checked = true;
+            }
             //Custom Forms
             $custom_forms_test_enabled = $this->getConfigValue('ct_custom_contact_forms');
             if( $custom_forms_test_enabled &&

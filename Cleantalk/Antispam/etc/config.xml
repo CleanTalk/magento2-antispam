@@ -10,6 +10,7 @@
                 <ct_access_key>None</ct_access_key>
 				<ct_registrations>1</ct_registrations>
 				<ct_contact_forms>1</ct_contact_forms>
+                <ct_reviews>1</ct_reviews>                
 				<ct_custom_contact_forms>1</ct_custom_contact_forms>
                 <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
             </cleantalkantispam>
