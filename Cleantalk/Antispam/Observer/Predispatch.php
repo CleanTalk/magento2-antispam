@@ -63,7 +63,7 @@ class Predispatch implements ObserverInterface
         //Go out if CleanTalk disabled
         if(!$this->getConfigValue('ct_enabled'))
             return;
-        if (strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false || strpos($_SERVER['REQUEST_URI'], 'sagepay') !== false || strpos($_SERVER['REQUEST_URI'], 'paypal') !== false || strpos($_SERVER['REQUEST_URI'], 'customer/address/edit') !== false)
+        if (strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false || strpos($_SERVER['REQUEST_URI'], 'sagepay') !== false || strpos($_SERVER['REQUEST_URI'], 'paypal') !== false || strpos($_SERVER['REQUEST_URI'], 'customer/address/edit') !== false || strpos($_SERVER['REQUEST_URI'], 'customer/account/createpassword') !== false || strpos($_SERVER['REQUEST_URI'], 'customer/address/new') !== false)
             return;
         $this->cookies_set();
         //Exeptions for spam protection
@@ -92,7 +92,7 @@ class Predispatch implements ObserverInterface
                 isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['comment'], $_POST['hideit'])
             ){
                 $ct_fields = $this -> cleantalkGetFields($_POST);
-                $result_array = $this -> setArrayToSend($ct_fields, 'comment');
+                $result_array = $this -> setArrayToSend($ct_fields, 'feedback_general_contact_form');
                 
                 $ct_already_checked = true;
             }
@@ -104,7 +104,7 @@ class Predispatch implements ObserverInterface
                 isset($_POST['nickname'], $_POST['title'], $_POST['detail'])
             ){
                 $ct_fields = $this -> cleantalkGetFields($_POST);
-                $result_array = $this -> setArrayToSend($ct_fields, 'comment');
+                $result_array = $this -> setArrayToSend($ct_fields, 'feedback_general_contact_form');
                 
                 $ct_already_checked = true;
             }
@@ -117,7 +117,7 @@ class Predispatch implements ObserverInterface
             ){
 
                 $ct_fields = $this -> cleantalkGetFields($_POST);
-                $result_array = $this -> setArrayToSend($ct_fields, 'comment');
+                $result_array = $this -> setArrayToSend($ct_fields, 'feedback_general_contact_form');
             }
             
             //Rrequest and block if needed
