@@ -448,8 +448,8 @@ class Predispatch implements ObserverInterface
         $ct_key = $this->getConfigValue('ct_access_key');
         
         $ct_ws = array(
-                'work_url' => 'http://moderate.cleantalk.org',
-                'server_url' => 'http://moderate.cleantalk.org',
+                'work_url' => 'https://moderate.cleantalk.org',
+                'server_url' => 'https://moderate.cleantalk.org',
                 'server_ttl' => 0,
                 'server_changed' => 0,
             );
