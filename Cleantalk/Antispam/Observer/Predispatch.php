@@ -113,7 +113,8 @@ class Predispatch implements ObserverInterface
             if( $custom_forms_test_enabled &&
                 !$ct_already_checked &&
                 strpos($_SERVER['REQUEST_URI'],'login')===false &&
-                strpos($_SERVER['REQUEST_URI'],'forgotpassword')===false
+                strpos($_SERVER['REQUEST_URI'],'forgotpassword')===false &&
+                strpos($_SERVER['REQUEST_URI'],'account/create')===false
             ){
 
                 $ct_fields = $this -> cleantalkGetFields($_POST);
