@@ -482,12 +482,12 @@ class Predispatch implements ObserverInterface
             'REFFERRER' => $refferrer,
             'post_url' => $refferrer,
             'USER_AGENT' => $user_agent,
-            'js_timezone' => $timezone,
-            'REFFERRER_PREVIOUS' => ($ref_pref) ? $ref_pref : null,
+            'js_timezone' => ($timezone && $timezone !== 'default value') ? $timezone : '',
+            'REFFERRER_PREVIOUS' => ($ref_pref && $ref_pref !== 'default value') ? $ref_pref : null,
             'cookies_enabled' => $this->cookies_test(),
             'mouse_cursor_positions' => ($pointer_data) ? json_decode($pointer_data) : '',
-            'key_press_timestamp' => ($fkp_timestamp) ? $fkp_timestamp : '',
-            'page_set_timestamp' => ($ps_timestamp) ? $ps_timestamp : 0,            
+            'key_press_timestamp' => ($fkp_timestamp && $fkp_timestamp !== 'default value') ? $fkp_timestamp : 0,
+            'page_set_timestamp' => ($ps_timestamp && $ps_timestamp !== 'default value') ? $ps_timestamp : 0,            
         );
         $sender_info = json_encode($sender_info);
                 
