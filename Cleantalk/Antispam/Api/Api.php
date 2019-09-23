@@ -61,7 +61,8 @@ ctSetCookie("%s", "%s");
 
 		$ct_key = Mage::getStoreConfig('general/cleantalk/api_key');
         $ct_ws = self::GetWorkServer();
-
+        if (isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT'] == 'CodistoConnect/1.0') 
+            return;
 		if(!(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'))
 			if (!session_id())
 				session_start(); //This one is causing errors with ajax
