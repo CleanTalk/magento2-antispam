@@ -33,6 +33,9 @@
                     <label>Protect Custom Forms</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="ct_exclude_urls" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Exclude URLs from checking</label>
+                </field>                
             </group>
         </section>
     </system>

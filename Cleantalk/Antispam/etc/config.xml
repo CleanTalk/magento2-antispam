@@ -12,6 +12,7 @@
 				<ct_contact_forms>1</ct_contact_forms>
                 <ct_reviews>1</ct_reviews>                
 				<ct_custom_contact_forms>1</ct_custom_contact_forms>
+                <ct_exclude_urls>None</ct_exclude_urls>
                 <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
             </cleantalkantispam>
         </carriers>
