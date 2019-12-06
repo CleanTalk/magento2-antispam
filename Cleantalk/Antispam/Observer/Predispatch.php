@@ -509,6 +509,12 @@ class Predispatch implements ObserverInterface
         $ct_request->js_on = $checkjs;
         $ct_request->sender_info = $sender_info;
         $ct_request->submit_time = ($ct_timestamp) ? time() - intval($ct_timestamp) : 0;
+
+        // Skip submission if no data found
+        if ( $ct_request->sender_email === '' ) {
+            return false;
+        }
+
         switch ($type) {
             case 'feedback_general_contact_form':
                 $timelabels_key = 'mail_error_comment';
