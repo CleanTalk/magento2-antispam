@@ -540,7 +540,7 @@ class Predispatch implements ObserverInterface
 
                 // Additional info.
                 $post_info = '';
-                $a_post_info['comment_type'] = 'comment';
+                $a_post_info['comment_type'] = 'feedback_general_contact_form';
 
                 // JSON format.
                 $example = json_encode($a_example);
