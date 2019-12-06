@@ -589,6 +589,12 @@ class Cleantalk
             }
 
             $result = curl_exec($ch);
+            if($result === false){
+                if($this->ssl_on === false){
+                    $this->ssl_on = true;
+                    return self::sendRequest( $data, $url, $server_timeout );
+                }
+            }
             if (!$result) {
                 $curl_error = curl_error($ch);
             }
