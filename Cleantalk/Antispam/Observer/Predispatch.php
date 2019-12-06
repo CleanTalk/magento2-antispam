@@ -444,7 +444,7 @@ class Predispatch implements ObserverInterface
         if(!is_array($arEntity) || !array_key_exists('type', $arEntity) || $arEntity['send_request'] === false) return;
 
         $type = $arEntity['type'];
-        if($type != 'comment' && $type != 'register') return;
+        if($type != 'feedback_general_contact_form' && $type != 'register') return;
 
         $ct_key = $this->getConfigValue('ct_access_key');
         
@@ -510,7 +510,7 @@ class Predispatch implements ObserverInterface
         $ct_request->sender_info = $sender_info;
         $ct_request->submit_time = ($ct_timestamp) ? time() - intval($ct_timestamp) : 0;
         switch ($type) {
-            case 'comment':
+            case 'feedback_general_contact_form':
                 $timelabels_key = 'mail_error_comment';
                 if (isset($arEntity['message_title']))
                     $message_title = is_array($arEntity['message_title']) ? implode(" ", $arEntity['message_title']) : $arEntity['message_title'];
