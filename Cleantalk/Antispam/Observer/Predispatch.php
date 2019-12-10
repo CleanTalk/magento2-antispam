@@ -339,16 +339,16 @@ class Predispatch implements ObserverInterface
                             $value = self::obfuscate_param($value);
                         }
                     }unset($needle);
-                    
 
-                    // Decodes URL-encoded data to string.
-                    $value = urldecode($value); 
+                    // Removes whitespaces
+                    $value = urldecode( trim( $value ) ); // Fully cleaned message
+                    $value_for_email = trim( $value );    // Removes shortcodes to do better spam filtration on server side.
 
                     // Email
-                    if (!$email && preg_match("/^\S+@\S+\.\S+$/", $value)){
-                        $email = $value;
-                        
-                    // Names
+                    if ( ! $email && preg_match( "/^\S+@\S+\.\S+$/", $value_for_email ) ) {
+                        $email = $value_for_email;
+
+                        // Names
                     }elseif (preg_match("/name/i", $key)){
                         
                         preg_match("/(first.?name)?(name.?first)?(forename)?/", $key, $match_forename);
