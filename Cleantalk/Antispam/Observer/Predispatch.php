@@ -72,7 +72,8 @@ class Predispatch implements ObserverInterface
             strpos($_SERVER['REQUEST_URI'], 'customer/address/new') !== false ||
             (isset($_POST['action_url']) && strpos($_POST['action_url'], 'checkout/cart/add') !== false) ||
             strpos($_SERVER['REQUEST_URI'], 'wishlist/index/add') !== false || 
-            strpos($_SERVER['REQUEST_URI'], 'instagrampro/gallery/instalist')
+            strpos($_SERVER['REQUEST_URI'], 'instagrampro/gallery/instalist') || 
+            (isset($_POST['customerEmail']) && strpos($_SERVER['REQUEST_URI'], 'isEmailAvailable') !== false)
         )
             return;
         $this->cookies_set();

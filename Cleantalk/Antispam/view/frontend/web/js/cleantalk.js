@@ -45,7 +45,7 @@ var ctFunctionMouseMove = function output(event){
 		if(ctMouseDataCounter >= 100)
 			ctMouseStopData();
 	}
-}
+};
 
 //Stop key listening function
 function ctKeyStopStopListening(){
@@ -63,7 +63,7 @@ var ctFunctionFirstKey = function output(event){
 	var KeyTimestamp = Math.floor(new Date().getTime()/1000);
 	ctSetCookie("ct_fkp_timestamp", KeyTimestamp);
 	ctKeyStopStopListening();
-}
+};
 
 if(typeof window.addEventListener == "function"){
 	window.addEventListener("mousemove", ctFunctionMouseMove);
