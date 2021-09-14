@@ -85,9 +85,11 @@ class Predispatch implements ObserverInterface
             //Registrations
             $registration_test_enabled = $this->getConfigValue('ct_registrations');
             if( 
-                // $registration_test_enabled &&
-                strpos($_SERVER['REQUEST_URI'],'account/createpost') && 
-                isset($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['password'], $_POST['password_confirmation'])
+				$registration_test_enabled &&
+				(
+					( strpos($_SERVER['REQUEST_URI'],'account/createpost') && isset($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['password'], $_POST['password_confirmation']) ) ||
+					( strpos($_SERVER['REQUEST_URI'],'account/create') && isset( $_POST['email'], $_POST['password'], $_POST['confirmation']) )
+				)
             ){
                 $ct_fields = $this -> cleantalkGetFields($_POST);
                 $result_array = $this -> setArrayToSend($ct_fields, 'register');
@@ -98,7 +100,7 @@ class Predispatch implements ObserverInterface
             //Contacts          
             $contact_test_enabled = $this->getConfigValue('ct_contact_forms');
             if( 
-                // $contact_test_enabled &&
+                $contact_test_enabled &&
                 strpos($_SERVER['REQUEST_URI'],'contact/index') && 
                 isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['comment'], $_POST['hideit'])
             ){
@@ -125,7 +127,10 @@ class Predispatch implements ObserverInterface
                 !$ct_already_checked &&
                 strpos($_SERVER['REQUEST_URI'],'login')===false &&
                 strpos($_SERVER['REQUEST_URI'],'forgotpassword')===false &&
-                strpos($_SERVER['REQUEST_URI'],'account/create')===false
+                strpos($_SERVER['REQUEST_URI'],'account/create')===false &&
+                strpos($_SERVER['REQUEST_URI'],'account/createpost')===false &&
+                strpos($_SERVER['REQUEST_URI'],'account/login')===false &&
+                strpos($_SERVER['REQUEST_URI'],'account/edit')===false
             ){
 
                 $ct_fields = $this -> cleantalkGetFields($_POST);
