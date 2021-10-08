@@ -4,6 +4,8 @@ namespace Cleantalk\Antispam\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Cleantalk\Antispam\Api\lib\Cleantalk;
+use Cleantalk\Antispam\Api\lib\CleantalkRequest;
 
 class Predispatch implements ObserverInterface
 {

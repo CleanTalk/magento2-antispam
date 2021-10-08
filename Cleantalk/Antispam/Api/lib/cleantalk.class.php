@@ -1,5 +1,5 @@
 <?php
-namespace Cleantalk\Antispam\Observer;
+namespace Cleantalk\Antispam\Api\lib;
 
 /**
  * Cleantalk base class

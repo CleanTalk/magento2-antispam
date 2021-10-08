@@ -114,13 +114,13 @@ ctSetCookie("%s", "%s");
 
         require_once __DIR__  . '/lib/cleantalk.class.php';
         
-        $ct = new Cleantalk();
+        $ct = new Cleantalk\Antispam\Api\lib\Cleantalk();
         $ct->work_url = $ct_ws['work_url'];
         $ct->server_url = $ct_ws['server_url'];
         $ct->server_ttl = $ct_ws['server_ttl'];
         $ct->server_changed = $ct_ws['server_changed'];
 		$sender_ip = $ct->cleantalk_get_real_ip();
-        $ct_request = new CleantalkRequest();
+        $ct_request = new Cleantalk\Antispam\Api\lib\CleantalkRequest();
         $ct_request->auth_key = $ct_key;
         $ct_request->sender_email = isset($arEntity['sender_email']) ? $arEntity['sender_email'] : '';
         $ct_request->sender_nickname = isset($arEntity['sender_nickname']) ? $arEntity['sender_nickname'] : '';
