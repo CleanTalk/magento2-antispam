@@ -460,7 +460,18 @@ class Predispatch implements ObserverInterface
     function CheckSpam($arEntity){
     
         if(!is_array($arEntity) || !array_key_exists('type', $arEntity) || $arEntity['send_request'] === false) return;
+        $url_exclusions_config = $this->getConfigValue('ct_exclude_urls');
+        if (!empty($url_exclusions_config) && !is_null($url_exclusions_config)) {
+            $get_exclusions = explode(',', trim($url_exclusions_config));
+            if ($get_exclusions && is_array($get_exclusions) && count($get_exclusions) > 0) {
 
+                foreach ($get_exclusions as $key => $value) {
+                    if( strpos($_SERVER['REQUEST_URI'], $value) !== false ) { // Simple string checking
+                        return;
+                    }
+                }
+            }
+        }
         $type = $arEntity['type'];
         if($type != 'feedback_general_contact_form' && $type != 'register') return;
 
