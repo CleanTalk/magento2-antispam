@@ -204,7 +204,7 @@ class Predispatch implements ObserverInterface
         $cookie_test_value['check_value'] .= $site_landing_timestamp;
         
         // Cookies test
-        $cookie_test_value['check_value'] = md5($cookie_test_value['check_value']);
+        $cookie_test_value['check_value'] = hash("sha256", $cookie_test_value['check_value']);
         setcookie('ct_cookies_test', json_encode($cookie_test_value), 0, '/');
     }
     /**
@@ -221,8 +221,8 @@ class Predispatch implements ObserverInterface
             foreach($cookie_test['cookies_names'] as $cookie_name){
                 $check_srting .= isset($_COOKIE[$cookie_name]) ? $_COOKIE[$cookie_name] : '';
             } unset($cokie_name);
-            
-            if($cookie_test['check_value'] == md5($check_srting)){
+
+            if($cookie_test['check_value'] == hash("sha256", $check_srting)){
                 return 1;
             }else{
                 return 0;

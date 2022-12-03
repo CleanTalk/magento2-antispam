@@ -265,10 +265,10 @@ ctSetCookie("%s", "%s");
 
     /**
      * CleanTalk inner function - JavaScript checking value, depends on system variables
-     * @return string System depending md5 hash
+     * @return string System depending sha256 hash
      */
     static function GetCheckJSValue() {
-	return md5(Mage::getStoreConfig('general/cleantalk/api_key') . '_' . Mage::getStoreConfig('trans_email/ident_general/email'));
+	return hash("sha256", Mage::getStoreConfig('general/cleantalk/api_key') . '_' . Mage::getStoreConfig('trans_email/ident_general/email'));
     }
 
 }// class Cleantalk_Antispam_Model_Api
