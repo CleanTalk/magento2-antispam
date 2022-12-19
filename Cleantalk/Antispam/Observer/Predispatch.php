@@ -4,8 +4,8 @@ namespace Cleantalk\Antispam\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Cleantalk\Antispam\Api\lib\Cleantalk;
-use Cleantalk\Antispam\Api\lib\CleantalkRequest;
+use Cleantalk\Antispam\lib\Cleantalk;
+use Cleantalk\Antispam\lib\CleantalkRequest;
 
 class Predispatch implements ObserverInterface
 {
@@ -18,16 +18,28 @@ class Predispatch implements ObserverInterface
 
     protected $config_writer;
 
+    /**
+     * @var \Magento\Framework\App\ActionFlag
+     */
+    private $_actionFlag;
+
+    /**
+     * @var \Laminas\Stdlib\ParametersInterface|mixed
+     */
+    private $_post;
+
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager,
         \Magento\Framework\Session\SessionManagerInterface $sessionManager,
-        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter
+        \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
+        \Magento\Framework\App\ActionFlag $actionFlag
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->_cookieManager = $cookieManager;
         $this->_sessionManager = $sessionManager;
         $this->config_writer = $configWriter;
+        $this->_actionFlag = $actionFlag;
     }
 
     // * Get a configuration value
@@ -77,6 +89,9 @@ class Predispatch implements ObserverInterface
         if ( !$this->getConfigValue('ct_enabled') ) {
             return;
         }
+
+        $this->_post = $observer->getControllerAction()->getRequest()->getPostValue();
+
         if (
             strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false ||
             strpos($_SERVER['REQUEST_URI'], 'sagepay') !== false ||
@@ -84,16 +99,16 @@ class Predispatch implements ObserverInterface
             strpos($_SERVER['REQUEST_URI'], 'customer/address/edit') !== false ||
             strpos($_SERVER['REQUEST_URI'], 'customer/account/createpassword') !== false ||
             strpos($_SERVER['REQUEST_URI'], 'customer/address/new') !== false ||
-            (isset($_POST['action_url']) && strpos($_POST['action_url'], 'checkout/cart/add') !== false) ||
+            (isset($this->_post['action_url']) && strpos($this->_post['action_url'], 'checkout/cart/add') !== false) ||
             strpos($_SERVER['REQUEST_URI'], 'wishlist/index/add') !== false ||
-            strpos($_SERVER['REQUEST_URI'], 'instagrampro/gallery/instalist') ||
-            (isset($_POST['customerEmail']) && strpos($_SERVER['REQUEST_URI'], 'isEmailAvailable') !== false)
+            strpos($_SERVER['REQUEST_URI'], 'instagrampro/gallery/instalist') !== false ||
+            (isset($this->_post['customerEmail']) && strpos($_SERVER['REQUEST_URI'], 'isEmailAvailable') !== false)
         ) {
             return;
         }
         $this->cookies_set();
         //Exeptions for spam protection
-        if ( isset($_POST) && count($_POST) ) {
+        if ( isset($this->_post) && count($this->_post) ) {
             //Flag to disable custom contact form checking
             $ct_already_checked = false;
 
@@ -102,17 +117,17 @@ class Predispatch implements ObserverInterface
             if (
                 $registration_test_enabled &&
                 (
-                    (strpos(
-                            $_SERVER['REQUEST_URI'],
-                            'account/createpost'
-                        ) && isset($_POST['firstname'], $_POST['lastname'], $_POST['email'], $_POST['password'], $_POST['password_confirmation'])) ||
-                    (strpos(
-                            $_SERVER['REQUEST_URI'],
-                            'account/create'
-                        ) && isset($_POST['email'], $_POST['password'], $_POST['confirmation']))
+                    (
+                        strpos($_SERVER['REQUEST_URI'], 'account/createpost') !== false &&
+                        isset($this->_post['firstname'], $this->_post['lastname'], $this->_post['email'], $this->_post['password'], $this->_post['password_confirmation'])
+                    ) ||
+                    (
+                        strpos($_SERVER['REQUEST_URI'], 'account/create') !== false &&
+                        isset($this->_post['email'], $this->_post['password'], $this->_post['confirmation'])
+                    )
                 )
             ) {
-                $ct_fields = $this->cleantalkGetFields($_POST);
+                $ct_fields = $this->cleantalkGetFields($this->_post);
                 $result_array = $this->setArrayToSend($ct_fields, 'register');
 
                 $ct_already_checked = true;
@@ -122,10 +137,10 @@ class Predispatch implements ObserverInterface
             $contact_test_enabled = $this->getConfigValue('ct_contact_forms');
             if (
                 $contact_test_enabled &&
-                strpos($_SERVER['REQUEST_URI'], 'contact/index') &&
-                isset($_POST['name'], $_POST['email'], $_POST['telephone'], $_POST['comment'], $_POST['hideit'])
+                strpos($_SERVER['REQUEST_URI'], 'contact/index') !== false &&
+                isset($this->_post['name'], $this->_post['email'], $this->_post['telephone'], $this->_post['comment'], $this->_post['hideit'])
             ) {
-                $ct_fields = $this->cleantalkGetFields($_POST);
+                $ct_fields = $this->cleantalkGetFields($this->_post);
                 $result_array = $this->setArrayToSend($ct_fields, 'feedback_general_contact_form');
 
                 $ct_already_checked = true;
@@ -134,10 +149,10 @@ class Predispatch implements ObserverInterface
             $reviews_test_enabled = $this->getConfigValue('ct_reviews');
             if (
                 $reviews_test_enabled &&
-                strpos($_SERVER['REQUEST_URI'], 'review') &&
-                isset($_POST['nickname'], $_POST['title'], $_POST['detail'])
+                strpos($_SERVER['REQUEST_URI'], 'review') !== false &&
+                isset($this->_post['nickname'], $this->_post['title'], $this->_post['detail'])
             ) {
-                $ct_fields = $this->cleantalkGetFields($_POST);
+                $ct_fields = $this->cleantalkGetFields($this->_post);
                 $result_array = $this->setArrayToSend($ct_fields, 'feedback_general_contact_form');
 
                 $ct_already_checked = true;
@@ -153,7 +168,7 @@ class Predispatch implements ObserverInterface
                 strpos($_SERVER['REQUEST_URI'], 'account/login') === false &&
                 strpos($_SERVER['REQUEST_URI'], 'account/edit') === false
             ) {
-                $ct_fields = $this->cleantalkGetFields($_POST);
+                $ct_fields = $this->cleantalkGetFields($this->_post);
                 $result_array = $this->setArrayToSend($ct_fields, 'feedback_general_contact_form');
             }
 
@@ -163,7 +178,9 @@ class Predispatch implements ObserverInterface
                 if ( isset($aResult) && is_array($aResult) ) {
                     if ( $aResult['errno'] == 0 ) {
                         if ( $aResult['allow'] == 0 ) {
-                            $this->CleantalkDie($aResult['ct_result_comment']);
+                            $response = $observer->getControllerAction()->getResponse();
+                            $this->_actionFlag->set('', \Magento\Framework\App\Action\Action::FLAG_NO_DISPATCH, true);
+                            return $response->setBody($this->CleantalkDie($aResult['ct_result_comment']));
                         }
                     }
                 }
@@ -172,7 +189,7 @@ class Predispatch implements ObserverInterface
     }
 
     //Prepares data to request
-    static function setArrayToSend($arr, $type)
+    private function setArrayToSend($arr, $type)
     {
         $result_array = array();
         $result_array['type'] = $type;
@@ -191,7 +208,7 @@ class Predispatch implements ObserverInterface
      * Cookie test
      * @return
      */
-    function cookies_set()
+    private function cookies_set()
     {
         // Cookie names to validate
         $cookie_test_value = array(
@@ -229,7 +246,7 @@ class Predispatch implements ObserverInterface
      * Cookie test
      * @return int
      */
-    function cookies_test()
+    private function cookies_test()
     {
         if ( isset($_COOKIE['ct_cookies_test']) ) {
             $cookie_test = json_decode(stripslashes($_COOKIE['ct_cookies_test']), true);
@@ -251,7 +268,7 @@ class Predispatch implements ObserverInterface
     }
 
     //Recursevely gets data from array
-    static function cleantalkGetFields(
+    private function cleantalkGetFields(
         $arr,
         $message = array(),
         $email = null,
@@ -334,7 +351,7 @@ class Predispatch implements ObserverInterface
         );
 
         foreach ( $skip_params as $value ) {
-            if ( array_key_exists($value, $_POST) ) {
+            if ( array_key_exists($value, $this->_post) ) {
                 $contact = false;
             }
         }
@@ -460,7 +477,7 @@ class Predispatch implements ObserverInterface
      * Masks a value with asterisks (*)
      * @return string
      */
-    static function obfuscate_param($value = null)
+    private function obfuscate_param($value = null)
     {
         if ( $value && (!is_object($value) || !is_array($value)) ) {
             $length = strlen($value);
@@ -469,12 +486,16 @@ class Predispatch implements ObserverInterface
         return $value;
     }
 
-    //Die function - Shows special die page
-    static function CleantalkDie($message)
+    /**
+     * Die function - Get HTML for the die page
+     *
+     * @param $message
+     * @return string
+     */
+    private function CleantalkDie($message)
     {
         $error_tpl = file_get_contents(dirname(__FILE__) . "/error.html");
-        print str_replace('%ERROR_TEXT%', $message, $error_tpl);
-        die();
+        return str_replace('%ERROR_TEXT%', $message, $error_tpl);
     }
 
     /**
@@ -484,7 +505,7 @@ class Predispatch implements ObserverInterface
      * @param boolean Notify admin about errors by email or not (default FALSE)
      * @return array|null Checking result or NULL when bad params
      */
-    function CheckSpam($arEntity)
+    private function CheckSpam($arEntity)
     {
         if ( !is_array($arEntity) || !array_key_exists('type', $arEntity) || $arEntity['send_request'] === false ) {
             return;
@@ -555,8 +576,6 @@ class Predispatch implements ObserverInterface
             'page_set_timestamp' => ($ps_timestamp && $ps_timestamp !== 'default value') ? $ps_timestamp : 0,
         );
         $sender_info = json_encode($sender_info);
-
-        require_once __DIR__ . '/../Api/lib/cleantalk.class.php';
 
         $ct = new Cleantalk();
         $ct->work_url = $ct_ws['work_url'];
