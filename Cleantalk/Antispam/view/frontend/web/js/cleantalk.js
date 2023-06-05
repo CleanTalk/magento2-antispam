@@ -17,7 +17,7 @@ define(['jquery'], function ($) {
         }
 
         setTimeout(function(){
-            ctSetCookie("ct_checkjs", "777b374af06bbb4f6fdbda40727b5c3b");
+            ctSetCookie("ct_checkjs", config.jsKey);
         }, 1000);
         ctSetCookie("ct_ps_timestamp", Math.floor(new Date().getTime()/1000));
         ctSetCookie("ct_timezone", d.getTimezoneOffset()/60*(-1));

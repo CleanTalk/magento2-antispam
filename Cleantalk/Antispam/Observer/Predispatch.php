@@ -542,7 +542,7 @@ class Predispatch implements ObserverInterface
             }
         } //This one is causing errors with ajax
 
-        $checkjs = $this->getCookie('ct_checkjs') == '777b374af06bbb4f6fdbda40727b5c3b' ? 1 : 0;
+        $checkjs = $this->getCookie('ct_checkjs') == hash('sha256', $this->getConfigValue('ct_access_key')) ? 1 : 0;
         $timezone = $this->getCookie('ct_timezone');
         $ref_pref = $this->getCookie('ct_prev_referer');
         $fkp_timestamp = $this->getCookie('ct_fkp_timestamp');
