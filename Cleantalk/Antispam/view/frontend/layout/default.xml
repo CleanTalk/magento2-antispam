@@ -1,5 +1,13 @@
+<?xml version="1.0"?>
+
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head>
-        <link src="Cleantalk_Antispam/js/cleantalk.js"/>
-    </head>
+    <body>
+        <referenceBlock name="head.additional">
+            <block
+                class="Cleantalk\Antispam\Block\JsLocalization"
+                name="apbct-js-localization"
+                template="Cleantalk_Antispam::apbct-js-localization.phtml"
+            />
+        </referenceBlock>
+    </body>
 </page>
