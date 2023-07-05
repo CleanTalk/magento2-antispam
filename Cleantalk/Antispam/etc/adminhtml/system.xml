@@ -28,14 +28,18 @@
                 <field id="ct_reviews" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Protect Reviews</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>                
+                </field>
 				<field id="ct_custom_contact_forms" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Protect Custom Forms</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="ct_exclude_urls" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="0" showInStore="0">
+                 <field id="ct_external_forms" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Protect External Forms</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="ct_exclude_urls" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Exclude URLs from checking</label>
-                </field>                
+                </field>
             </group>
         </section>
     </system>
