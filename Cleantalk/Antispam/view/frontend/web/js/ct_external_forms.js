@@ -10,6 +10,8 @@ define(['jquery'], function ($) {
          * Handle external forms
          */
         function ctProtectExternal() {
+            clearInterval(dynamicRenderedFormInterval);
+            console.log('ctProtectExternal');
             for (let i = 0; i < document.forms.length; i++) {
                 if (document.forms[i].cleantalk_hidden_action === undefined &&
                     document.forms[i].cleantalk_hidden_method === undefined) {
@@ -20,11 +22,13 @@ define(['jquery'], function ($) {
 
                         // Ajax checking for the integrated forms
                         if ( isIntegratedForm(currentForm) ) {
+                            console.log('isIntegratedForm');
                             apbctProcessExternalForm(currentForm, i, document);
 
                             // Common flow - modify form's action
                         } else if (currentForm.action.indexOf('http://') !== -1 ||
                             currentForm.action.indexOf('https://') !== -1) {
+                            console.log('currentForm.action.indexOf');
                             let tmp = currentForm.action.split('//');
                             tmp = tmp[1].split('/');
                             const host = tmp[0].toLowerCase();
@@ -54,15 +58,47 @@ define(['jquery'], function ($) {
         }
 
         window.onload = function() {
+            console.log('window.onload');
+            console.log(config);
             if ( ! +config.externalForms ) {
                 return;
             }
 
             setTimeout(function() {
                 ctProtectExternal();
-                //catchDynamicRenderedForm();
+                catchDynamicRenderedForm();
             }, 1500);
         };
+
+        let dynamicRenderedFormInterval = null;
+
+        /**
+         * Catching dynamic rendered forms
+         * 
+         * @return {void}
+         */
+        function catchDynamicRenderedForm() {
+            if (isIntegratedDynamicFormOnPage()) {
+                dynamicRenderedFormInterval = setInterval(function() {
+                    ctProtectExternal();
+                }, 1000);
+            }
+        }
+
+        /**
+         * Checking the dynamic rendered forms
+         * 
+         * @return {boolean}
+         */
+        function isIntegratedDynamicFormOnPage() {
+            let result = false;
+
+            document.querySelectorAll('script[src]').forEach(el => {
+                if (el.src.includes('ctctcdn.com')) result = true;
+            });
+
+            return result;
+        }
 
         /**
          * Checking the form integration
@@ -86,7 +122,7 @@ define(['jquery'], function ($) {
          * @param {HTMLElement} documentObject
          */
         function apbctProcessExternalForm(currentForm, iterator, documentObject) {
-
+            console.log('apbctProcessExternalForm');
             const cleantalkPlaceholder = document.createElement('i');
             cleantalkPlaceholder.className = 'cleantalk_placeholder';
             cleantalkPlaceholder.style = 'display: none';
