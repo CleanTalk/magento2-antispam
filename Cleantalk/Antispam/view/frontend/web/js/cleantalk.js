@@ -5,7 +5,6 @@ define(['jquery'], function ($) {
      * @param {Object} config
      */
     return function (config) {
-        console.log('Cleantalk JS loaded', config);
 
         let d = new Date(),
             ctTimeMs = new Date().getTime(),
