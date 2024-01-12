@@ -1,0 +1,13 @@
+<?php
+
+/** @var $block \Cleantalk\Antispam\Block\JsLocalization */
+
+?>
+<script type="text/x-magento-init">
+    {
+        "*": {
+            "Cleantalk_Antispam/js/cleantalk": <?= /* @noEscape */ $block->getScriptOptions() ?>,
+            "Cleantalk_Antispam/js/ct_external_forms": <?= /* @noEscape */ $block->getExternalFormsEnabled() ?>
+        }
+    }
+</script>
