@@ -15,4 +15,15 @@ class JsLocalization extends \Magento\Framework\View\Element\Template
         ];
         return json_encode($params);
     }
+    public function getExternalFormsEnabled()
+    {
+        $external_forms_option = 'general/cleantalkantispam/ct_external_forms';
+        $external_forms = $this->_scopeConfig->getValue($external_forms_option);
+
+        $params = [
+            'externalForms' => $external_forms,
+            'ajaxUrl' => $this->getUrl('cleantalkajax/ajaxhandler'),
+        ];
+        return json_encode($params);
+    }
 }
