@@ -2,10 +2,12 @@
 
 namespace Cleantalk\Antispam\Observer;
 
+use Cleantalk\Common\Antispam\Cleantalk;
+use Cleantalk\Common\Antispam\CleantalkRequest;
+use Cleantalk\Common\Helper\Helper;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Cleantalk\Antispam\lib\Cleantalk;
-use Cleantalk\Antispam\lib\CleantalkRequest;
+
 
 class Predispatch implements ObserverInterface
 {
@@ -583,7 +585,7 @@ class Predispatch implements ObserverInterface
         $ct->server_ttl = $ct_ws['server_ttl'];
         $ct->server_changed = $ct_ws['server_changed'];
 
-        $sender_ip = $ct->cleantalk_get_real_ip();
+        $sender_ip = Helper::ipGet('remote_addr', false);
         $ct_request = new CleantalkRequest();
         $ct_request->auth_key = $ct_key;
         $ct_request->sender_email = isset($arEntity['sender_email']) ? $arEntity['sender_email'] : '';
