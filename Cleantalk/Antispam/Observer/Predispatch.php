@@ -92,7 +92,12 @@ class Predispatch implements ObserverInterface
             return;
         }
 
-        $this->_post = $observer->getControllerAction()->getRequest()->getPostValue();
+        $controller = $observer->getControllerAction();
+        if (!method_exists($controller, 'getRequest')) {
+            return;
+        }
+
+        $this->_post = $controller->getRequest()->getPostValue();
 
         if (
             strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false ||
