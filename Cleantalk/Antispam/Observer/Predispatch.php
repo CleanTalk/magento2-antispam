@@ -126,7 +126,7 @@ class Predispatch implements ObserverInterface
                 (
                     (
                         strpos($_SERVER['REQUEST_URI'], 'account/createpost') !== false &&
-                        isset($this->_post['firstname'], $this->_post['lastname'], $this->_post['email'], $this->_post['password'], $this->_post['password_confirmation'])
+                        isset($this->_post['firstname'], $this->_post['lastname'], $this->_post['email'])
                     ) ||
                     (
                         strpos($_SERVER['REQUEST_URI'], 'account/create') !== false &&
