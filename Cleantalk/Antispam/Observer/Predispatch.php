@@ -604,7 +604,7 @@ class Predispatch implements ObserverInterface
         switch ( $type ) {
             case 'feedback_general_contact_form':
                 // Skip submission if no data found
-                if ( $ct_request->sender_email === '' ) {
+                if ( $ct_request->sender_email === '' && $ct_request->sender_nickname === '' ) {
                     return false;
                 }
                 $timelabels_key = 'mail_error_comment';
