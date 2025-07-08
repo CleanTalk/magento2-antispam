@@ -252,14 +252,16 @@ class CleantalkRequest
         $this->event_type = isset($params['event_type']) ? (string)$params['event_type'] : null;
         $this->message_to_log = isset($params['message_to_log']) ? (string)$params['message_to_log'] : null;
 
+        $serializer = \Magento\Framework\App\ObjectManager::getInstance()
+            ->get(\Magento\Framework\Serialize\Serializer\Serialize::class);
         $this->message = !empty($params['message'])
             ? (!is_scalar($params['message'])
-                ? serialize($params['message'])
+                ? $serializer->serialize($params['message'])
                 : $params['message'])
             : null;
         $this->example = !empty($params['example'])
             ? (!is_scalar($params['example'])
-                ? serialize($params['example'])
+                ? $serializer->serialize($params['example'])
                 : $params['example'])
             : null;
 
