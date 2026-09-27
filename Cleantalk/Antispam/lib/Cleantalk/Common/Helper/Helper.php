@@ -412,7 +412,7 @@ class Helper
         // Standartizing. Getting current octets/hextets. Adding leading zeros.
         $net_xtet = str_pad(
             decbin(
-                ($ip_type === 'v4' && (int)$net_ip_xtets[$xtet_count]) ? $net_ip_xtets[$xtet_count] : @hexdec(
+                ($ip_type === 'v4' && (int)$net_ip_xtets[$xtet_count]) ? (int)$net_ip_xtets[$xtet_count] : @hexdec(
                     $net_ip_xtets[$xtet_count]
                 )
             ),
@@ -422,7 +422,7 @@ class Helper
         );
         $ip_xtet = str_pad(
             decbin(
-                ($ip_type === 'v4' && (int)$ip_xtets[$xtet_count]) ? $ip_xtets[$xtet_count] : @hexdec(
+                ($ip_type === 'v4' && (int)$ip_xtets[$xtet_count]) ? (int)$ip_xtets[$xtet_count] : @hexdec(
                     $ip_xtets[$xtet_count]
                 )
             ),
@@ -585,31 +585,74 @@ class Helper
     }
 
     /**
-     * Get URL form IP
+     * Resolve IP to hostname with FCrDNS (Forward-Confirmed reverse DNS) verification.
+     * Protects against PTR spoofing by verifying the hostname resolves back to the same IP.
      *
-     * @param $ip
+     * @param string $ip IP address to resolve
      *
-     * @return string
+     * @return string|false Verified hostname or false on failure
      */
     public static function ipResolve($ip)
     {
-        if ( self::ipValidate($ip) ) {
-            $url = gethostbyaddr($ip);
-            if ( $url ) {
-                return $url;
+        // Validate IP first
+        $ip_version = self::ipValidate($ip);
+        if (!$ip_version) {
+            return false;
+        }
+
+        // Reverse DNS lookup (PTR record)
+        $hostname = gethostbyaddr($ip);
+
+        // If gethostbyaddr returns the IP itself, it means no PTR record exists
+        if (!$hostname || $hostname === $ip) {
+            return false;
+        }
+
+        // Forward DNS lookup - use dns_get_record() to support both IPv4 (A) and IPv6 (AAAA) records
+        $record_type = ($ip_version === 'v6') ? DNS_AAAA : DNS_A;
+        $ip_field = ($ip_version === 'v6') ? 'ipv6' : 'ip';
+
+        $records = @dns_get_record($hostname, $record_type);
+
+        // If forward lookup fails, we can't verify
+        if (empty($records)) {
+            return false;
+        }
+
+        // Extract IPs from DNS records
+        $forward_ips = array();
+        foreach ($records as $record) {
+            if (isset($record[$ip_field])) {
+                $forward_ips[] = $record[$ip_field];
             }
         }
 
-        return $ip;
+        if (empty($forward_ips)) {
+            return false;
+        }
+
+        // Check if the original IP is in the list of IPs the hostname resolves to
+        if ($ip_version === 'v6') {
+            $normalized_ip = self::ipV6Normalize($ip);
+            foreach ($forward_ips as $forward_ip) {
+                if (self::ipV6Normalize($forward_ip) === $normalized_ip) {
+                    return $hostname;
+                }
+            }
+        } elseif (in_array($ip, $forward_ips, true)) {
+            return $hostname;
+        }
+
+        return false;
     }
 
     /**
      * Resolve DNS to IP
      *
      * @param      $host
-     * @param bool $out
+     * @param false|string $out
      *
-     * @return bool
+     * @return false|string
      * @psalm-suppress PossiblyUnusedMethod
      */
     public static function dnsResolve($host, $out = false)
@@ -742,7 +785,7 @@ class Helper
         if ( $response_code === 200 ) { // Check if it's there
             $data = static::httpRequestGetContent($url);
 
-            if ( empty($data['error']) ) {
+            if ( is_string($data) ) {
                 if ( static::getMimeType($data, 'application/x-gzip') ) {
                     if ( function_exists('gzdecode') ) {
                         $data = gzdecode($data);
@@ -753,13 +796,14 @@ class Helper
                             return array('error' => 'Can not unpack datafile');
                         }
                     } else {
-                        return array('error' => 'Function gzdecode not exists. Please update your PHP at least to version 5.4 ' . $data['error']);
+                        return array('error' => 'Function gzdecode not exists. Please update your PHP at least to version 5.4');
                     }
                 } else {
                     return array('error' => 'Wrong file mime type: ' . $url);
                 }
             } else {
-                return array('error' => 'Getting datafile ' . $url . '. Error: ' . $data['error']);
+                $error_msg = is_array($data) && !empty($data['error']) ? $data['error'] : 'Unknown error';
+                return array('error' => 'Getting datafile ' . $url . '. Error: ' . $error_msg);
             }
         } else {
             return array('error' => 'Bad HTTP response (' . (int)$response_code . ') from file location: ' . $url);
@@ -778,9 +822,11 @@ class Helper
     {
         $result = static::httpGetDataFromRemoteGz($url);
 
-        return empty($result['error'])
-            ? static::bufferParseCsv($result)
-            : $result;
+        if ( is_string($result) ) {
+            return static::bufferParseCsv($result);
+        }
+
+        return $result;
     }
 
     /**
@@ -875,7 +921,7 @@ class Helper
             unset($val);
         //String
         } else {
-            if ( !preg_match('//u', $obj) ) {
+            if ( !preg_match('//u', (string) $obj) ) {
                 if ( function_exists('mb_detect_encoding') ) {
                     $encoding = mb_detect_encoding($obj);
                     $encoding = $encoding ?: $data_codepage;
@@ -883,12 +929,8 @@ class Helper
                     $encoding = $data_codepage;
                 }
 
-                if ( $encoding ) {
-                    if ( function_exists('mb_convert_encoding') ) {
-                        $obj = mb_convert_encoding($obj, 'UTF-8', $encoding);
-                    } elseif ( version_compare(phpversion(), '8.3', '<') ) {
-                        $obj = @utf8_encode($obj);
-                    }
+                if ( $encoding && function_exists('mb_convert_encoding') ) {
+                    $obj = mb_convert_encoding($obj, 'UTF-8', $encoding);
                 }
             }
         }
@@ -914,12 +956,8 @@ class Helper
             unset($val);
         //String
         } else {
-            if ($data_codepage !== null && preg_match('//u', $obj)) {
-                if ( function_exists('mb_convert_encoding') ) {
-                    $obj = mb_convert_encoding($obj, $data_codepage, 'UTF-8');
-                } elseif (version_compare(phpversion(), '8.3', '<')) {
-                    $obj = @utf8_decode($obj);
-                }
+            if ($data_codepage !== null && preg_match('//u', (string) $obj) && function_exists('mb_convert_encoding')) {
+                $obj = mb_convert_encoding($obj, $data_codepage, 'UTF-8');
             }
         }
 
@@ -967,7 +1005,9 @@ class Helper
         } elseif ( function_exists('finfo_open') ) {
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $type = finfo_buffer($finfo, $data);
-            finfo_close($finfo);
+            if (PHP_VERSION_ID < 80000) {
+                finfo_close($finfo);
+            }
         }
 
         // @ToDo the method must return comparison result: return $type ===  mime_content_type($data)
