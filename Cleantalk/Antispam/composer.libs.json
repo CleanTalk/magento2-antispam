@@ -1,0 +1,20 @@
+{
+  "name": "cleantalk/magento2-lib-sync",
+  "description": "Refresh vendored CleanTalk common libraries",
+  "require": {
+    "cleantalk/apbct-installer": "^1.7",
+    "cleantalk/antispam": "^1.6",
+    "cleantalk/cleaner": "^1.2",
+    "cleantalk/helper": "^1.5",
+    "cleantalk/http": "^2.0",
+    "cleantalk/mloader": "^1.1",
+    "cleantalk/templates": "^1.4",
+    "cleantalk/variables": "^1.2"
+  },
+  "config": {
+    "allow-plugins": {
+      "cleantalk/apbct-installer": true
+    },
+    "sort-packages": true
+  }
+}
