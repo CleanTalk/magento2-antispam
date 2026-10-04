@@ -563,12 +563,12 @@ class Request
                     // Append parameter in a different way for single and multiple requests
                     if ( is_array($this->url) ) {
                         $this->url = array_map(static function ($elem) {
-                            return self::appendParametersToURL($elem, ['no_cache' => mt_rand()]);
+                            return self::appendParametersToURL($elem, ['no_cache' => random_int(0, mt_getrandmax())]);
                         }, $this->url);
                     } else {
                         $this->options[CURLOPT_URL] = self::appendParametersToURL(
                             $this->options[CURLOPT_URL],
-                            ['no_cache' => mt_rand()]
+                            ['no_cache' => random_int(0, mt_getrandmax())]
                         );
                     }
                     break;

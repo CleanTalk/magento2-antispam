@@ -11,10 +11,7 @@ use Magento\Framework\Event\ObserverInterface;
 
 class Predispatch implements ObserverInterface
 {
-    const COOKIE_REFERRAL = 'referral';
-
     protected $_cookieManager;
-    protected $_sessionManager;
 
     protected $scopeConfig;
 
@@ -33,13 +30,11 @@ class Predispatch implements ObserverInterface
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Framework\Stdlib\CookieManagerInterface $cookieManager,
-        \Magento\Framework\Session\SessionManagerInterface $sessionManager,
         \Magento\Framework\App\Config\Storage\WriterInterface $configWriter,
         \Magento\Framework\App\ActionFlag $actionFlag
     ) {
         $this->scopeConfig = $scopeConfig;
         $this->_cookieManager = $cookieManager;
-        $this->_sessionManager = $sessionManager;
         $this->config_writer = $configWriter;
         $this->_actionFlag = $actionFlag;
     }
@@ -60,31 +55,6 @@ class Predispatch implements ObserverInterface
         return $result;
     }
 
-    //Set cookie
-    public function setCookie($value)
-    {
-        // set public cookie (can be accessed by JS)
-        $meta = new \Magento\Framework\Stdlib\Cookie\PublicCookieMetadata();
-        $meta->setPath('/'); // use meta to define cookie props: domain, duration, security, ...
-        $meta->setDurationOneYear();
-        $this->_cookieManager->setPublicCookie(self::COOKIE_REFERRAL, $value, $meta);
-
-        // or set HTTP only cookie (is not accessible from JavaScript )
-        /** @var \Magento\Framework\Stdlib\Cookie\SensitiveCookieMetadata $meta */
-        $meta = null; // use meta to define cookie props: domain, duration, security, ...
-        $this->_cookieManager->setSensitiveCookie(self::COOKIE_REFERRAL, $value, $meta);
-    }
-
-    public function process()
-    {
-        // save variable with name 'referral_code' into the session (using 'magic' methods)
-        $this->_sessionManager->setReferralCode('u54321');
-
-        // restore saved value from the session
-        $saved = $this->_sessionManager->getReferralCode();
-    }
-
-
     public function execute(Observer $observer)
     {
         //Go out if CleanTalk disabled
@@ -97,23 +67,27 @@ class Predispatch implements ObserverInterface
             return;
         }
 
-        $this->_post = $controller->getRequest()->getPostValue();
+        $request = $controller->getRequest();
+        $requestUri = (string)$request->getRequestUri();
+        $this->_post = $request->getPostValue();
 
         if (
-            strpos($_SERVER['REQUEST_URI'], '/ajaxcart/') !== false ||
-            strpos($_SERVER['REQUEST_URI'], 'sagepay') !== false ||
-            strpos($_SERVER['REQUEST_URI'], 'paypal') !== false ||
-            strpos($_SERVER['REQUEST_URI'], 'customer/address/edit') !== false ||
-            strpos($_SERVER['REQUEST_URI'], 'customer/account/createpassword') !== false ||
-            strpos($_SERVER['REQUEST_URI'], 'customer/address/new') !== false ||
+            strpos($requestUri, '/ajaxcart/') !== false ||
+            strpos($requestUri, 'sagepay') !== false ||
+            strpos($requestUri, 'paypal') !== false ||
+            strpos($requestUri, 'customer/address/edit') !== false ||
+            strpos($requestUri, 'customer/account/createpassword') !== false ||
+            strpos($requestUri, 'customer/address/new') !== false ||
             (isset($this->_post['action_url']) && strpos($this->_post['action_url'], 'checkout/cart/add') !== false) ||
-            strpos($_SERVER['REQUEST_URI'], 'wishlist/index/add') !== false ||
-            strpos($_SERVER['REQUEST_URI'], 'instagrampro/gallery/instalist') !== false ||
-            (isset($this->_post['customerEmail']) && strpos($_SERVER['REQUEST_URI'], 'isEmailAvailable') !== false)
+            strpos($requestUri, 'wishlist/index/add') !== false ||
+            strpos($requestUri, 'instagrampro/gallery/instalist') !== false ||
+            (isset($this->_post['customerEmail']) && strpos($requestUri, 'isEmailAvailable') !== false)
         ) {
             return;
         }
-        $this->cookies_set();
+        // Cookie values are planted from cleantalk.js. A Set-Cookie header on a
+        // cacheable GET response makes Varnish skip the page, so the marketplace
+        // page-cache test never sees HIT.
         //Exeptions for spam protection
         if ( isset($this->_post) && count($this->_post) ) {
             //Flag to disable custom contact form checking
@@ -212,66 +186,39 @@ class Predispatch implements ObserverInterface
     }
 
     /**
-     * Cookie test
-     * @return
-     */
-    private function cookies_set()
-    {
-        // Cookie names to validate
-        $cookie_test_value = array(
-            'cookies_names' => array(),
-            'check_value' => $this->getConfigValue('ct_access_key'),
-        );
-        // Pervious referer
-        if ( !empty($_SERVER['HTTP_REFERER']) ) {
-            setcookie('ct_prev_referer', $_SERVER['HTTP_REFERER'], 0, '/');
-            $cookie_test_value['cookies_names'][] = 'ct_prev_referer';
-            $cookie_test_value['check_value'] .= $_SERVER['HTTP_REFERER'];
-        }
-        // Submit time
-        $ct_timestamp = time();
-        setcookie('ct_timestamp', $ct_timestamp, 0, '/');
-        $cookie_test_value['cookies_names'][] = 'ct_timestamp';
-        $cookie_test_value['check_value'] .= $ct_timestamp;
-
-        // Landing time
-        if ( isset($_COOKIE['ct_site_landing_ts']) ) {
-            $site_landing_timestamp = $_COOKIE['ct_site_landing_ts'];
-        } else {
-            $site_landing_timestamp = time();
-            setcookie('ct_site_landing_ts', $site_landing_timestamp, 0, '/');
-        }
-        $cookie_test_value['cookies_names'][] = 'ct_site_landing_ts';
-        $cookie_test_value['check_value'] .= $site_landing_timestamp;
-
-        // Cookies test
-        $cookie_test_value['check_value'] = hash("sha256", $cookie_test_value['check_value']);
-        setcookie('ct_cookies_test', json_encode($cookie_test_value), 0, '/');
-    }
-
-    /**
-     * Cookie test
-     * @return int
+     * Checks cookies planted by cleantalk.js.
+     *
+     * The hash prefix is sha256(access key), the same value already passed to the
+     * browser as jsKey. A previous package hashed the raw access key in PHP.
+     *
+     * @return int|null
      */
     private function cookies_test()
     {
-        if ( isset($_COOKIE['ct_cookies_test']) ) {
-            $cookie_test = json_decode(stripslashes($_COOKIE['ct_cookies_test']), true);
-
-            $check_srting = $this->getConfigValue('ct_access_key');
-            foreach ( $cookie_test['cookies_names'] as $cookie_name ) {
-                $check_srting .= isset($_COOKIE[$cookie_name]) ? $_COOKIE[$cookie_name] : '';
-            }
-            unset($cokie_name);
-
-            if ( $cookie_test['check_value'] == hash("sha256", $check_srting) ) {
-                return 1;
-            } else {
-                return 0;
-            }
-        } else {
+        if ( !isset($_COOKIE['ct_cookies_test']) ) {
             return null;
         }
+
+        $cookie_test = json_decode(stripslashes($_COOKIE['ct_cookies_test']), true);
+        if ( !is_array($cookie_test) || empty($cookie_test['cookies_names']) || !is_array($cookie_test['cookies_names']) ) {
+            return 0;
+        }
+
+        $cookie_values = '';
+        foreach ( $cookie_test['cookies_names'] as $cookie_name ) {
+            $cookie_values .= isset($_COOKIE[$cookie_name]) ? $_COOKIE[$cookie_name] : '';
+        }
+
+        $access_key = (string)$this->getConfigValue('ct_access_key');
+        $check_value = isset($cookie_test['check_value']) ? (string)$cookie_test['check_value'] : '';
+        $expected_from_js = hash('sha256', hash('sha256', $access_key) . $cookie_values);
+        $expected_from_php = hash('sha256', $access_key . $cookie_values);
+
+        if ( hash_equals($expected_from_js, $check_value) || hash_equals($expected_from_php, $check_value) ) {
+            return 1;
+        }
+
+        return 0;
     }
 
     //Recursevely gets data from array
@@ -541,15 +488,7 @@ class Predispatch implements ObserverInterface
             'server_ttl' => 0,
             'server_changed' => 0,
         );
-        if ( !(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower(
-                $_SERVER['HTTP_X_REQUESTED_WITH']
-            ) == 'xmlhttprequest') ) {
-            if ( !session_id() ) {
-                session_start();
-            }
-        } //This one is causing errors with ajax
-
-        $checkjs = $this->getCookie('ct_checkjs') == hash('sha256', $this->getConfigValue('ct_access_key')) ? 1 : 0;
+        $checkjs = $this->getCookie('ct_checkjs') == hash('sha256', (string)$this->getConfigValue('ct_access_key')) ? 1 : 0;
         $timezone = $this->getCookie('ct_timezone');
         $ref_pref = $this->getCookie('ct_prev_referer');
         $fkp_timestamp = $this->getCookie('ct_fkp_timestamp');

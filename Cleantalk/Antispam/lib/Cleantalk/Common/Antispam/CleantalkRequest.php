@@ -260,12 +260,12 @@ class CleantalkRequest
 
         $this->message = !empty($params['message'])
             ? (!is_scalar($params['message'])
-                ? serialize($params['message'])
+                ? json_encode($params['message'])
                 : $params['message'])
             : null;
         $this->example = !empty($params['example'])
             ? (!is_scalar($params['example'])
-                ? serialize($params['example'])
+                ? json_encode($params['example'])
                 : $params['example'])
             : null;
 

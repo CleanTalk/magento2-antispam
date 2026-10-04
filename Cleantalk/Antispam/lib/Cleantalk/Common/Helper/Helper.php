@@ -929,12 +929,8 @@ class Helper
                     $encoding = $data_codepage;
                 }
 
-                if ( $encoding ) {
-                    if ( function_exists('mb_convert_encoding') ) {
-                        $obj = mb_convert_encoding($obj, 'UTF-8', $encoding);
-                    } elseif ( version_compare(phpversion(), '8.3', '<') ) {
-                        $obj = @utf8_encode($obj);
-                    }
+                if ( $encoding && function_exists('mb_convert_encoding') ) {
+                    $obj = mb_convert_encoding($obj, 'UTF-8', $encoding);
                 }
             }
         }
@@ -960,12 +956,12 @@ class Helper
             unset($val);
         //String
         } else {
-            if ($data_codepage !== null && preg_match('//u', (string) $obj)) {
-                if ( function_exists('mb_convert_encoding') ) {
-                    $obj = mb_convert_encoding($obj, $data_codepage, 'UTF-8');
-                } elseif (version_compare(phpversion(), '8.3', '<')) {
-                    $obj = @utf8_decode($obj);
-                }
+            if (
+                $data_codepage !== null
+                && preg_match('//u', (string) $obj)
+                && function_exists('mb_convert_encoding')
+            ) {
+                $obj = mb_convert_encoding($obj, $data_codepage, 'UTF-8');
             }
         }
 
