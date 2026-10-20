@@ -1,0 +1,351 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "e46f135bba5f9dbbd1a9079b99caad70",
+    "packages": [
+        {
+            "name": "cleantalk/antispam",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CleanTalk/_antispam.git",
+                "reference": "e3c2ded4c32347f107c9ff994d4e8e795e242dfb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CleanTalk/_antispam/zipball/e3c2ded4c32347f107c9ff994d4e8e795e242dfb",
+                "reference": "e3c2ded4c32347f107c9ff994d4e8e795e242dfb",
+                "shasum": ""
+            },
+            "require": {
+                "cleantalk/cleaner": "*",
+                "cleantalk/helper": "*",
+                "cleantalk/http": "*",
+                "cleantalk/mloader": "*"
+            },
+            "require-dev": {
+                "phpcompatibility/php-compatibility": "^9.3",
+                "phpunit/phpunit": "^8.5.52",
+                "squizlabs/php_codesniffer": "3.*",
+                "vimeo/psalm": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cleantalk\\Common\\Antispam\\": "/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "CleanTalk Team",
+                    "email": "support@cleantalk.org"
+                }
+            ],
+            "description": "CleanTalk APBCT Antispam classes",
+            "support": {
+                "issues": "https://github.com/CleanTalk/_antispam/issues",
+                "source": "https://github.com/CleanTalk/_antispam/tree/1.6.0"
+            },
+            "time": "2026-04-17T12:43:17+00:00"
+        },
+        {
+            "name": "cleantalk/apbct-installer",
+            "version": "1.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CleanTalk/apbct-installer-composer-plugin.git",
+                "reference": "929a06ca08d782eb004dac2509fd72a00bbc4084"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CleanTalk/apbct-installer-composer-plugin/zipball/929a06ca08d782eb004dac2509fd72a00bbc4084",
+                "reference": "929a06ca08d782eb004dac2509fd72a00bbc4084",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "*"
+            },
+            "require-dev": {
+                "composer/composer": "*"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "Cleantalk\\ApbctInstaller\\Plugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Cleantalk\\ApbctInstaller\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "CleanTalk Team",
+                    "email": "support@cleantalk.org"
+                }
+            ],
+            "description": "Plugin for custom installing CleanTalk lib",
+            "support": {
+                "issues": "https://github.com/CleanTalk/apbct-installer-composer-plugin/issues",
+                "source": "https://github.com/CleanTalk/apbct-installer-composer-plugin/tree/1.7.0"
+            },
+            "time": "2026-05-07T08:56:06+00:00"
+        },
+        {
+            "name": "cleantalk/cleaner",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CleanTalk/_cleaner.git",
+                "reference": "940e6e8be3dfe14e07011c9e6802c63fed17d04d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CleanTalk/_cleaner/zipball/940e6e8be3dfe14e07011c9e6802c63fed17d04d",
+                "reference": "940e6e8be3dfe14e07011c9e6802c63fed17d04d",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cleantalk\\Common\\Cleaner\\": "/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "CleanTalk Team",
+                    "email": "support@cleantalk.org"
+                }
+            ],
+            "description": "CleanTalk APBCT Sanitizing/Escaping/Validating variables classes",
+            "support": {
+                "issues": "https://github.com/CleanTalk/_cleaner/issues",
+                "source": "https://github.com/CleanTalk/_cleaner/tree/1.2.0"
+            },
+            "time": "2026-03-20T10:49:59+00:00"
+        },
+        {
+            "name": "cleantalk/helper",
+            "version": "1.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CleanTalk/_helper.git",
+                "reference": "8b50adb2df1e20e20efebb4b25c5057347c6eec0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CleanTalk/_helper/zipball/8b50adb2df1e20e20efebb4b25c5057347c6eec0",
+                "reference": "8b50adb2df1e20e20efebb4b25c5057347c6eec0",
+                "shasum": ""
+            },
+            "require": {
+                "cleantalk/http": "*",
+                "cleantalk/templates": "*",
+                "cleantalk/variables": "*"
+            },
+            "require-dev": {
+                "phpcompatibility/php-compatibility": "^9.3",
+                "phpunit/phpunit": "^9.6",
+                "squizlabs/php_codesniffer": "3.*",
+                "vimeo/psalm": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cleantalk\\Common\\Helper\\": "/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "CleanTalk Team",
+                    "email": "support@cleantalk.org"
+                }
+            ],
+            "description": "CleanTalk APBCT `Helper` class",
+            "support": {
+                "issues": "https://github.com/CleanTalk/_helper/issues",
+                "source": "https://github.com/CleanTalk/_helper/tree/1.5.1"
+            },
+            "time": "2026-09-11T09:44:51+00:00"
+        },
+        {
+            "name": "cleantalk/http",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CleanTalk/http-lib.git",
+                "reference": "22b384f1bca98f65fd719e6710d8b73f838e4631"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CleanTalk/http-lib/zipball/22b384f1bca98f65fd719e6710d8b73f838e4631",
+                "reference": "22b384f1bca98f65fd719e6710d8b73f838e4631",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cleantalk\\Common\\Http\\": "/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "CleanTalk Team",
+                    "email": "support@cleantalk.org"
+                }
+            ],
+            "description": "CleanTalk HTTP Requests library",
+            "support": {
+                "issues": "https://github.com/CleanTalk/http-lib/issues",
+                "source": "https://github.com/CleanTalk/http-lib/tree/2.0.0"
+            },
+            "time": "2026-08-31T07:24:42+00:00"
+        },
+        {
+            "name": "cleantalk/mloader",
+            "version": "1.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CleanTalk/_mloader.git",
+                "reference": "5aa3e43fa0d27ea2711481162a4eef22ab980192"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CleanTalk/_mloader/zipball/5aa3e43fa0d27ea2711481162a4eef22ab980192",
+                "reference": "5aa3e43fa0d27ea2711481162a4eef22ab980192",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cleantalk\\Common\\Mloader\\": "/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "CleanTalk Team",
+                    "email": "support@cleantalk.org"
+                }
+            ],
+            "description": "CleanTalk APBCT `Mloader` class",
+            "support": {
+                "issues": "https://github.com/CleanTalk/_mloader/issues",
+                "source": "https://github.com/CleanTalk/_mloader/tree/1.1.1"
+            },
+            "time": "2026-03-20T10:55:29+00:00"
+        },
+        {
+            "name": "cleantalk/templates",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CleanTalk/_templates.git",
+                "reference": "b385c3f92c94a542bed5fa4c81dc8c22061f69e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CleanTalk/_templates/zipball/b385c3f92c94a542bed5fa4c81dc8c22061f69e6",
+                "reference": "b385c3f92c94a542bed5fa4c81dc8c22061f69e6",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Cleantalk\\Common\\Templates\\": "./"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "CleanTalk Team",
+                    "email": "support@cleantalk.org"
+                }
+            ],
+            "description": "CleanTalk APBCT traits",
+            "support": {
+                "issues": "https://github.com/CleanTalk/_templates/issues",
+                "source": "https://github.com/CleanTalk/_templates/tree/1.4.0"
+            },
+            "time": "2026-06-30T11:08:32+00:00"
+        },
+        {
+            "name": "cleantalk/variables",
+            "version": "1.2.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/CleanTalk/_variables.git",
+                "reference": "3e8fc6e95e44b0fb36b9175d55f43176fd311e85"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/CleanTalk/_variables/zipball/3e8fc6e95e44b0fb36b9175d55f43176fd311e85",
+                "reference": "3e8fc6e95e44b0fb36b9175d55f43176fd311e85",
+                "shasum": ""
+            },
+            "require": {
+                "cleantalk/cleaner": "*",
+                "cleantalk/templates": "*"
+            },
+            "type": "cleantalk-apbct-lib",
+            "autoload": {
+                "psr-4": {
+                    "Cleantalk\\Common\\Variables\\": "/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "CleanTalk Team",
+                    "email": "support@cleantalk.org"
+                }
+            ],
+            "description": "CleanTalk APBCT Server Variables classes",
+            "support": {
+                "issues": "https://github.com/CleanTalk/_variables/issues",
+                "source": "https://github.com/CleanTalk/_variables/tree/1.2.2"
+            },
+            "time": "2026-07-24T05:10:21+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.9.0"
+}

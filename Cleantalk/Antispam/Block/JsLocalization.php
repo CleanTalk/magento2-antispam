@@ -7,7 +7,7 @@ class JsLocalization extends \Magento\Framework\View\Element\Template
     public function getScriptOptions()
     {
         $path = 'general/cleantalkantispam/ct_access_key';
-        $config = $this->_scopeConfig->getValue($path);
+        $config = (string)$this->_scopeConfig->getValue($path);
 
         $params = [
             // @ToDo we can make it stronger - add a salt
@@ -22,7 +22,7 @@ class JsLocalization extends \Magento\Framework\View\Element\Template
 
         $params = [
             'externalForms' => $external_forms,
-            'ajaxUrl' => $this->getUrl('cleantalkajax/ajaxhandler'),
+            'ajaxUrl' => $this->getUrl('cleantalkajax/ajaxhandler', ['_nosid' => true]),
         ];
         return json_encode($params);
     }

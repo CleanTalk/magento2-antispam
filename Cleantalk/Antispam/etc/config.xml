@@ -2,20 +2,17 @@
 
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-        <carriers>
+        <general>
             <cleantalkantispam>
-                <model>Cleantalk\Antispam\Model\Carrier\Method</model>
-                <title>CleanTalk Antispam</title>
                 <ct_enabled>1</ct_enabled>
-                <ct_access_key>None</ct_access_key>
-				<ct_registrations>1</ct_registrations>
-				<ct_contact_forms>1</ct_contact_forms>
+                <ct_access_key></ct_access_key>
+                <ct_registrations>1</ct_registrations>
+                <ct_contact_forms>1</ct_contact_forms>
                 <ct_reviews>1</ct_reviews>
-				<ct_custom_contact_forms>1</ct_custom_contact_forms>
+                <ct_custom_contact_forms>1</ct_custom_contact_forms>
                 <ct_external_forms>0</ct_external_forms>
-                <ct_exclude_urls>None</ct_exclude_urls>
-                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <ct_exclude_urls></ct_exclude_urls>
             </cleantalkantispam>
-        </carriers>
+        </general>
     </default>
 </config>
